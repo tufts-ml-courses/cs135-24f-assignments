@@ -7,7 +7,7 @@ K Nearest Neighbors
 ...     [-1., 0.],
 ...     [0., -1.]])
 >>> query_QF = np.asarray([
-    ...     [0.9, 0.],
+...     [0.9, 0.],
 ...     [0., -0.9]])
 
 Example Test K=1
