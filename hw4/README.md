@@ -2,8 +2,8 @@ Implementation TODO list for students for this HW
 
 ## Problem 0: Coding tasks
 
-* [  ] Write your `predict` method for LeafNode in tree_utils.py
-* [  ] Write your `predict` method for InternalDecisionNode in tree_utils.py
+* [ ] Write your `predict` method for LeafNode in tree_utils.py
+* [ ] Write your `predict` method for InternalDecisionNode in tree_utils.py
 
 ## Problem 1-2: Analysis tasks
 
