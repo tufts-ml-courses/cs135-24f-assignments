@@ -3,7 +3,6 @@ from autograd import grad, value_and_grad
 import os
 import sys
 import pandas as pd
-from sklearn import metrics
 
 class AbstractBaseCollabFilterSGD(object):
     """ Base class for user-movie rating prediction via matrix factorization.
@@ -70,11 +69,9 @@ class AbstractBaseCollabFilterSGD(object):
         '''
         n_examples = user_id_N.size
         yhat_N = self.predict(user_id_N, item_id_N, **self.param_dict)
-        fpr, tpr, thresholds = metrics.roc_curve(y_true=ratings_N > 4, y_score=yhat_N)
-        auc = metrics.auc(fpr, tpr)
         mse = np.mean(np.square(yhat_N - ratings_N))
         mae = np.mean(np.abs(yhat_N - ratings_N))
-        return dict(mse=mse, mae=mae, auc=auc)
+        return dict(mse=mse, mae=mae)
 
     def calc_loss_wrt_parameter_dict(self, param_dict, data_tuple):
         ''' Template method to compute loss at specific parameters.
@@ -152,8 +149,8 @@ class AbstractBaseCollabFilterSGD(object):
         self.trace_epoch = []
         self.trace_loss = []
         self.trace_smooth_loss = []
-        self.trace_auc_train = []
-        self.trace_auc_valid = []
+        self.trace_mae_train = []
+        self.trace_mae_valid = []
 
         self.all_loss = []
 
@@ -199,8 +196,8 @@ class AbstractBaseCollabFilterSGD(object):
                     # Compute MAE/MSE metrics on training and validation data
                     train_perf_dict = self.evaluate_perf_metrics(*train_data_tuple)
                     valid_perf_dict = self.evaluate_perf_metrics(*valid_data_tuple)
-                    self.trace_auc_train.append(train_perf_dict['auc'])
-                    self.trace_auc_valid.append(valid_perf_dict['auc'])
+                    self.trace_mae_train.append(train_perf_dict['mae'])
+                    self.trace_mae_valid.append(valid_perf_dict['mae'])
 
                     # Compute 'smoothed' loss by averaging over last B batches
                     # Might remove some of the stochasticity in using only the
@@ -217,9 +214,9 @@ class AbstractBaseCollabFilterSGD(object):
                         avg_grad_norm_str_list.append(cur_norm_str)
                     avg_grad_norm_str = ' | '.join(avg_grad_norm_str_list)
 
-                    print("epoch %11.3f | loss_total % 11.5f | train_AUC% 11.5f | valid_AUC % 11.5f | %s" % (
+                    print("epoch %11.3f | loss_total % 11.5f | train_MAE % 11.5f | valid_MAE % 11.5f | %s" % (
                         epoch, loss if epoch <= 2 else smooth_loss,
-                        train_perf_dict['auc'], valid_perf_dict['auc'],
+                        train_perf_dict['mae'], valid_perf_dict['mae'],
                         avg_grad_norm_str))
 
                 ## Update each parameter by taking step in direction of gradient
